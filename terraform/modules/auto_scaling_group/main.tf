@@ -52,9 +52,6 @@ resource "aws_launch_template" "template_webcms" {
     security_groups             = [aws_security_group.sg_webcms.id]
   }
 
-  # vpc_security_group_ids = [aws_security_group.sg_webcms.id]
-
-
   tags = {
     Name = "template-WebCMS"
   }

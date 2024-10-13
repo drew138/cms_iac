@@ -37,37 +37,29 @@ jobs:
         run: terraform plan -input=false
         working-directory: ./terraform
 
-      # - name: Run `terraform apply`
-      #   run: terraform apply -auto-approve -input=false
-      #   working-directory: ./terraform
-      #
-      # - name: Save RDS_HOST environment variable
-      #   run: >
-      #     echo "RDS_HOST=$(terraform output -raw rds_host)" >> $GITHUB_ENV
-      #   working-directory: ./terraform
-      #
-      # - name: Run `packer init`
-      #   run: "packer init ./cms.pkr.hcl"
-      #   working-directory: ./packer
-      #
-      # - name: Run `packer build`
-      #   run: packer build -var rds_host=${{ env.RDS_HOST }} ./cms.pkr.hcl
-      #   working-directory: ./packer
-      #
-      # - name: Save AMI_ID environment variable
-      #   run: |
-      #     AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":") | .[1]' manifest.json)
-      #     echo "AMI_ID=${AMI_ID}" >> $GITHUB_ENV
-      #   working-directory: ./packer
-      #
-      # - name: Run `terraform apply`
-      #   run: terraform apply -var="aws_launch_template_ami_id=${{ env.AMI_ID }}" -auto-approve -input=false
-      #   working-directory: ./terraform
-
-      - name: Run `terraform destroy`
-        run: terraform destroy
+      - name: Run `terraform apply`
+        run: terraform apply -auto-approve -input=false
         working-directory: ./terraform
 
-      - name: Run `terraform destroy`
-        run: terraform destroy
+      - name: Save RDS_HOST environment variable
+        run: >
+          echo "RDS_HOST=$(terraform output -raw rds_host)" >> $GITHUB_ENV
+        working-directory: ./terraform
+
+      - name: Run `packer init`
+        run: "packer init ./cms.pkr.hcl"
+        working-directory: ./packer
+
+      - name: Run `packer build`
+        run: packer build -var rds_host=${{ env.RDS_HOST }} ./cms.pkr.hcl
+        working-directory: ./packer
+
+      - name: Save AMI_ID environment variable
+        run: |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":") | .[1]' manifest.json)
+          echo "AMI_ID=${AMI_ID}" >> $GITHUB_ENV
+        working-directory: ./packer
+
+      - name: Run `terraform apply`
+        run: terraform apply -var="aws_launch_template_ami_id=${{ env.AMI_ID }}" -auto-approve -input=false
         working-directory: ./terraform

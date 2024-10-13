@@ -45,12 +45,15 @@ resource "aws_lb_target_group" "cms_target_group" {
   port        = 80
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
+  target_type = "instance"
 
   health_check {
     path                = "/"
     protocol            = "HTTP"
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
+    port                = "traffic-port"
+    matcher             = "200,300-99"
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
     timeout             = 5
     interval            = 30
   }
