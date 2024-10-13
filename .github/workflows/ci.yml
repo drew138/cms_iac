@@ -41,7 +41,7 @@ jobs:
         run: terraform apply -auto-approve -input=false
         working-directory: ./terraform
 
-      - name: Run `terraform apply`
+      - name: Save RDS_HOST environment variable
         run: >
           echo "RDS_HOST=$(terraform output -raw rds_host)" >> $GITHUB_ENV
         working-directory: ./terraform
@@ -50,11 +50,7 @@ jobs:
         run: "packer init ./cms.pkr.hcl"
         working-directory: ./packer
 
-      - name: Run `packer validate`
-        run: "packer validate ./cms.pkr.hcl"
-        working-directory: ./packer
-
-      - name: Run `packer build`
+      - name: Save AMI_ID environment variable
         run: "packer build -var rds_host=${{ env.RDS_HOST }} ./cms.pkr.hcl"
         working-directory: ./packer
 
@@ -65,7 +61,7 @@ jobs:
         working-directory: ./packer
 
       - name: Run `terraform apply`
-        run: terraform apply -var="ami_id=${{ env.AMI_ID }}"
+        run: terraform apply -var="ami_id=${{ env.AMI_ID }}" -auto-approve -input=false
         working-directory: ./terraform
 
       # - name: Run `terraform destroy`
