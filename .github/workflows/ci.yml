@@ -1,0 +1,70 @@
+---
+name: ci
+
+"on":
+  push:
+
+env:
+  PACKER_VERSION: "1.11.2" # or: "latest"
+  TERRAFORM_VERSION: "1.5.2" # or: "latest"
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check out the codebase
+        uses: actions/checkout@v4
+
+      - name: install jq
+        run: sudo apt-get install jq
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+        id: setup
+        with:
+          version: ${{ env.PRODUCT_VERSION }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Run `terraform plan`
+        run: "terraform plan"
+        working-directory: ./terraform
+
+      - name: Run `terraform apply`
+        run: "terraform apply"
+        working-directory: ./terraform
+
+      - name: Run `terraform apply`
+        run: >
+          echo "RDS_HOST=$(terraform output -raw rds_host)" >> $GITHUB_ENV
+        working-directory: ./terraform
+
+      - name: Run `packer init`
+        run: "packer init ./cms.pkr.hcl"
+        working-directory: ./packer
+
+      - name: Run `packer validate`
+        run: "packer validate ./cms.pkr.hcl"
+        working-directory: ./packer
+
+      - name: Run `packer build`
+        run: "packer build -var rds_host=${{ env.RDS_HOST }} ./cms.pkr.hcl"
+        working-directory: ./packer
+
+      - name: Get ami id
+        run: |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":") | .[1]' manifest.json)
+          echo "AMI_ID=${AMI_ID}" >> $GITHUB_ENV
+        working-directory: ./packer
+
+      - name: Run `terraform apply`
+        run: terraform apply -var="ami_id=${{ env.AMI_ID }}"
+        working-directory: ./terraform
+
+      # - name: Run `terraform destroy`
+      #   run: terraform destroy
+      #   working-directory: ./terraform

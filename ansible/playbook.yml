@@ -1,0 +1,94 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: update apt cache
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: install apache2
+      apt:
+        name:
+          - apache2
+        state: latest
+
+    - name: install php
+      apt:
+        name:
+          - php
+          - libapache2-mod-php
+          - php-mysql
+        state: latest
+
+    - name: install wordpress complements
+      apt:
+        name:
+          - php-curl
+          - php-gd
+          - php-mbstring
+          - php-xml
+          - php-xmlrpc
+          - php-soap
+          - php-intl
+          - php-zip
+        state: latest
+
+    - name: move apache config file
+      copy:
+        src: 000-default.conf
+        dest: /etc/apache2/sites-available/000-default.conf
+        force: true
+
+    - name: run a2enmod to enable rewrite
+      command: a2enmod rewrite
+      notify:
+        - restart apache
+
+    - name: unzip wordpress
+      unarchive:
+        src: https://wordpress.org/latest.tar.gz
+        dest: /var/www/
+        remote_src: true
+
+    - name: create wp-config.php file
+      copy:
+        src: /var/www/wordpress/wp-config-sample.php
+        dest: /var/www/wordpress/wp-config.php
+        remote_src: true
+
+    - name: populate db name
+      lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "^define( 'DB_NAME', 'database_name_here' );"
+        line: "define( 'DB_NAME', 'wordpress' );"
+
+    - name: populate db user
+      lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "^define( 'DB_USER', 'username_here' );"
+        line: "define( 'DB_USER', 'wpuser' );"
+
+    - name: populate db password
+      lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "^define( 'DB_PASSWORD', 'password_here' );"
+        line: "define( 'DB_PASSWORD', 'wppassword' );"
+
+    - name: populate db host
+      lineinfile:
+        path: /var/www/wordpress/wp-config.php
+        regexp: "^define( 'DB_HOST', 'localhost' );"
+        line: "define( 'DB_HOST', '{{ rds_host }}' );"
+
+    - name: set permissions for all directories to 750
+      command: find /var/www/wordpress/ -type d -exec chmod 750 {} \;
+
+    - name: set permissions for all files to 640
+      command: find /var/www/wordpress/ -type f -exec chmod 640 {} \;
+
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
