@@ -22,7 +22,6 @@ jobs:
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
-        id: setup
         with:
           version: ${{ env.PRODUCT_VERSION }}
 
@@ -31,15 +30,15 @@ jobs:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
       - name: Run `terraform init`
-        run: "terraform init"
+        run: terraform init
         working-directory: ./terraform
 
       - name: Run `terraform plan`
-        run: "terraform plan"
+        run: terraform plan -input=false
         working-directory: ./terraform
 
       - name: Run `terraform apply`
-        run: "terraform apply"
+        run: terraform apply -auto-approve -input=false
         working-directory: ./terraform
 
       - name: Run `terraform apply`
