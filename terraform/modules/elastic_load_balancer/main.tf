@@ -51,7 +51,7 @@ resource "aws_lb_target_group" "cms_target_group" {
     path                = "/"
     protocol            = "HTTP"
     port                = "traffic-port"
-    matcher             = "200,300-99"
+    matcher             = "200,300-399"
     healthy_threshold   = 5
     unhealthy_threshold = 2
     timeout             = 5
