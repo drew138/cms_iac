@@ -106,11 +106,5 @@ resource "aws_autoscaling_group" "asg_webcms" {
       min_healthy_percentage = 100  # Ensures all instances are healthy before proceeding
       instance_warmup        = 300  # Time (in seconds) to wait before moving to the next batch
     }
-
-    triggers = {
-      # Trigger the refresh when the launch template's AMI changes
-      launch_template_id      = aws_launch_template.template_webcms.id
-      launch_template_version = aws_launch_template.template_webcms.latest_version
-    }
   }
 }
