@@ -49,14 +49,7 @@ resource "aws_lb_target_group" "cms_target_group" {
   target_type = "instance"
 
   health_check {
-    path                = "/"
-    protocol            = "HTTP"
-    port                = "traffic-port"
     matcher             = "200,300-399"
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
-    timeout             = 5
-    interval            = 30
   }
   tags = {
     Name = "tg-CMS"
