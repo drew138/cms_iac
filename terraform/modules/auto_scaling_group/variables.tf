@@ -17,3 +17,8 @@ variable "ami" {
   type        = string
   description = "ami id"
 }
+
+variable "template_subnet_id" {
+  type        = string
+  description = "template subnet id"
+}

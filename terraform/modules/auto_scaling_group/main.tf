@@ -50,6 +50,7 @@ resource "aws_launch_template" "template_webcms" {
   network_interfaces {
     associate_public_ip_address = false
     security_groups             = [aws_security_group.sg_webcms.id]
+    subnet_id                   = var.template_subnet_id
   }
 
   tags = {
