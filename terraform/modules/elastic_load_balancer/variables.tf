@@ -1,6 +1,6 @@
 variable "subnet_ids" {
   type        = list(string)
-  description = "private subnets 1 and 3 ids"
+  description = "public subnets 1 and 2"
 }
 
 variable "vpc_id" {

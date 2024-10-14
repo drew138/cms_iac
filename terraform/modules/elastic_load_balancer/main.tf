@@ -44,6 +44,7 @@ resource "aws_lb_target_group" "cms_target_group" {
   name        = "cms-target-group"
   port        = 80
   protocol    = "HTTP"
+  protocol_version = "HTTP1"
   vpc_id      = var.vpc_id
   target_type = "instance"
 

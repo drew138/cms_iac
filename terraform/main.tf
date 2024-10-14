@@ -23,7 +23,7 @@ module "bastion_host" {
 module "auto_scaling_gruop" {
   source     = "./modules/auto_scaling_group"
   vpc_id = module.vpc.vpc_id
-  subnet_ids = [module.vpc.public_subnet_az_1_1_id, module.vpc.public_subnet_az_2_2_id]
+  subnet_ids = [module.vpc.private_subnet_az_1_1_id, module.vpc.private_subnet_az_2_2_id]
   cms_target_group_arn = module.elastic_load_balancer.cms_target_group_arn
   ami = var.aws_launch_template_ami_id
 }
