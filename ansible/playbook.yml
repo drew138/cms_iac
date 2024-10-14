@@ -8,7 +8,6 @@
         cache_valid_time: 3600
 
     - name: install apache2
-      become: true
       apt:
         name:
           - apache2
@@ -51,6 +50,13 @@
         src: https://wordpress.org/latest.tar.gz
         dest: /var/www/
         remote_src: true
+
+    - name: change folder ownership to www-data
+      file:
+        path: /var/www/wordpress
+        owner: www-data
+        group: www-data
+        recurse: true
 
     - name: create wp-config.php file
       copy:
