@@ -54,10 +54,10 @@ resource "aws_db_instance" "wordpress_db" {
   instance_class       = "db.t3.micro"
   storage_type         = "gp2"
   allocated_storage    = 20
+  multi_az = true
   engine_version       = "10.11.8"
   skip_final_snapshot  = true
   publicly_accessible = false
-  multi_az = true
 
   db_subnet_group_name = local.db_subnet_group_name
 

@@ -8,7 +8,6 @@
         cache_valid_time: 3600
 
     - name: install apache2
-      become: true
       apt:
         name:
           - apache2
